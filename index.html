@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>班级积分系统（安全版）</title>
+  <style>
+    body{font-family:Microsoft YaHei,sans-serif;max-width:800px;margin:2rem auto;background:#f7f9fc;padding:0 1rem;}
+    .item{display:flex;justify-content:space-between;background:white;padding:10px 15px;border-radius:8px;margin-bottom:6px;}
+    button{padding:5px 10px;border:none;border-radius:6px;color:white;cursor:pointer;}
+    .add{background:#48bb78}
+    .minus{background:#f56565}
+  </style>
+</head>
+<body>
+  <h1>班级积分系统</h1>
+  <div id="list"></div>
+
+<script>
+async function load(){
+  const res = await fetch("/api/students");
+  const data = await res.json();
+  render(data);
+}
+
+function render(list){
+  document.getElementById("list").innerHTML = list.map(i=>`
+  <div class="item">
+    <span>${i.name}：${i.points} 分</span>
+    <div>
+      <button class="add" onclick="up('${i.id}')">+1</button>
+      <button class="minus" onclick="down('${i.id}')">-1</button>
+    </div>
+  </div>
+  `).join("");
+}
+
+async function up(id){ await fetch(`/api/change?id=${id}&delta=1`); load(); }
+async function down(id){ await fetch(`/api/change?id=${id}&delta=-1`); load(); }
+
+load();
+</script>
+</body>
+</html>
